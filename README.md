@@ -9,14 +9,10 @@ npm install
 npm run dev
 ```
 
-## 部署到 GitHub Pages（推薦：GitHub Actions）
-1. 把這個專案推到你的 GitHub repo（建議 repo 分支用 `main`）
-2. 到 GitHub Repo：**Settings → Pages → Source**，選 **GitHub Actions**
-3. 以後你每次 push 到 `main`，就會自動部署到 Pages
-
+## 部署到 GitHub Pages（GitHub Actions）
 > 本專案 `vite.config.js` 會在 GitHub Actions 內自動讀取 repo 名稱，設定正確的 `base` 路徑。
 
-## 你可以練習改的方向
+## 可以新增的練習方向
 - 倒數：加「自訂分鐘/秒輸入」或滑桿
 - 倒數結束：加提示音（並可開關）
 - localStorage：記住上次模式與倒數秒數
