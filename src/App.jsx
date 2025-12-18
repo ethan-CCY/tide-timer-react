@@ -95,7 +95,7 @@ export default function App() {
             <div className="countdownTools">
               <CountdownPresets disabled={cd.isRunning} onPick={onPickPreset} />
               <div className="hint">
-                小提示：倒數時可以先用預設，之後再加「自訂滑桿 / 輸入框」練習。
+                小提示：使用快速鍵，依點擊次數，初始時間可累加，或按 "清除" 重新設定。
               </div>
             </div>
           ) : null}
