@@ -45,7 +45,7 @@ export default function App() {
   const primaryTime =
     mode === "stopwatch"
       ? formatHMS(sw.elapsedMs, { showMs: true })
-      : formatHMS(cd.remainingMs);
+      : formatHMS(cd.remainingMs, { showMs: true });
 
   const onReset = () => {
     if (mode === "stopwatch") {
@@ -66,7 +66,7 @@ export default function App() {
   };
 
   return (
-    <div className="app">
+    <div className={`app mode-${mode}`}>
       <header className="header">
         <div className="brand">
           <div className="brandTitle">Tide Timer</div>
@@ -121,28 +121,6 @@ export default function App() {
               完成 ✨
             </div>
           ) : null}
-        </section>
-
-        <section className="side">
-          <div className="panel">
-            <div className="panelTitle">你可以接著練的功能</div>
-            <ul className="panelList">
-              <li>倒數自訂：分鐘/秒輸入、滑桿、+10s/-10s</li>
-              <li>音效開關（完成提示音）</li>
-              <li>localStorage：記住上次模式與倒數秒數</li>
-              <li>更療癒：水波更慢、呼吸週期可調</li>
-              <li>統計：今日累積專注時間 / 完成次數</li>
-            </ul>
-          </div>
-
-          <div className="panel">
-            <div className="panelTitle">部署到 GitHub Pages</div>
-            <ol className="panelList">
-              <li>把整包檔案推到你的 GitHub repo</li>
-              <li>Repo Settings → Pages → Source 選 GitHub Actions</li>
-              <li>等待 Actions 跑完，就會自動發佈</li>
-            </ol>
-          </div>
         </section>
       </main>
 
