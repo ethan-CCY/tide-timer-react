@@ -114,6 +114,21 @@ export function useCountdown(initialTotalMs = 5 * 60 * 1000) {
     setRemainingMs(clamped);
   };
 
+  const addTotalWhileStopped = (ms) => {
+    if (isRunning) return;
+    const next = Math.max(0, totalMs + ms);
+    setTotalMs(next);
+    baseRemainingRef.current = next;
+    setRemainingMs(next);
+  };
+
+  const clearTotalWhileStopped = () => {
+    if (isRunning) return;
+    setTotalMs(0);
+    baseRemainingRef.current = 0;
+    setRemainingMs(0);
+  };
+
   useRafTicker(isRunning, (t) => {
     const spent = t - startRef.current;
     const next = Math.max(0, baseRemainingRef.current - spent);
@@ -133,5 +148,7 @@ export function useCountdown(initialTotalMs = 5 * 60 * 1000) {
     pause,
     reset,
     setTotalWhileStopped,
+    addTotalWhileStopped,
+    clearTotalWhileStopped,
   };
 }

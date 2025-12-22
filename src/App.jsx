@@ -25,10 +25,10 @@ export default function App() {
       const progress = clamp(cd.remainingMs / total, 0, 1);
       return {
         ringProgress: progress,
-        waterLevel: progress,
+        waterLevel: 1 - progress,
         waterVariant: "countdown",
-        title: "倒數",
-        subtitle: `總長 ${formatHMS(cd.totalMs)}`,
+        title: `倒數時長 ${formatHMS(cd.totalMs).slice(0, 5)}`,
+        subtitle: "",
         flashKey: null,
       };
     }
@@ -42,6 +42,10 @@ export default function App() {
       waterVariant: "stopwatch",
       title: "碼錶",
       subtitle: sw.isRunning ? "流動中…" : "跑跑跑~向前跑~",
+      flashKey:
+        sw.isRunning && sw.elapsedMs >= 10000
+          ? Math.floor(sw.elapsedMs / 10000)
+          : null,
     };
   }, [mode, sw.elapsedMs, sw.isRunning, cd.remainingMs, cd.totalMs]);
 
@@ -65,7 +69,11 @@ export default function App() {
   };
 
   const onPickPreset = (ms) => {
-    cd.setTotalWhileStopped(ms);
+    cd.addTotalWhileStopped(ms);
+  };
+
+  const onClearPreset = () => {
+    cd.clearTotalWhileStopped();
   };
 
   return (
@@ -90,6 +98,9 @@ export default function App() {
               <div className="vizWrap">
                 <Ring progress={viz.ringProgress} size={300} />
                 <WaterGauge level={viz.waterLevel} variant={viz.waterVariant} size={260} />
+                {mode === "stopwatch" && viz.flashKey !== null ? (
+                  <div className="ringFlash" key={viz.flashKey} />
+                ) : null}
                 <div className="vizOverlay">
                   <div className="modeTitle">{viz.title}</div>
                   <TimeDisplay primary={primaryTime} secondary={viz.subtitle} />
@@ -116,39 +127,45 @@ export default function App() {
             <LapList laps={laps} />
           </div>
         ) : (
-          <section className="card breathe" aria-label="Timer">
-            <div className="vizWrap">
-              <Ring progress={viz.ringProgress} size={300} />
-              <WaterGauge level={viz.waterLevel} variant={viz.waterVariant} size={260} />
-              <div className="vizOverlay">
-                <div className="modeTitle">{viz.title}</div>
-                <TimeDisplay primary={primaryTime} secondary={viz.subtitle} />
-              </div>
-            </div>
-
-            {mode === "countdown" ? (
-              <div className="countdownTools">
-                <CountdownPresets disabled={cd.isRunning} onPick={onPickPreset} />
-                <div className="hint">
-                  小提示：使用快速鍵，依點擊次數，初始時間可累加，或按 "清除" 重新設定。
+          <div className="stopwatchGrid">
+            <section className="card breathe timerCard countdownCard" aria-label="Countdown">
+              <div className="vizWrap">
+                <Ring progress={viz.ringProgress} size={300} />
+                <WaterGauge level={viz.waterLevel} variant={viz.waterVariant} size={260} />
+                <div className="vizOverlay">
+                  <div className="modeTitle">{viz.title}</div>
+                  <TimeDisplay primary={primaryTime} secondary={viz.subtitle} />
                 </div>
               </div>
-            ) : null}
 
-            <Controls
-              isRunning={active.isRunning}
-              onStart={active.start}
-              onPause={active.pause}
-              onReset={onReset}
-              extraLeft={null}
-            />
+              <Controls
+                isRunning={active.isRunning}
+                onStart={active.start}
+                onPause={active.pause}
+                onReset={onReset}
+                extraLeft={null}
+              />
 
-            {mode === "countdown" && cd.remainingMs === 0 ? (
-              <div className="done" role="status">
-                完成 ✨
+              {mode === "countdown" && cd.remainingMs === 0 ? (
+                <div className="done" role="status">
+                  完成 ✨
+                </div>
+              ) : null}
+            </section>
+
+            <section className="card sideCard" aria-label="Countdown presets">
+              <div className="countdownTools">
+                <CountdownPresets
+                  disabled={cd.isRunning}
+                  onPick={onPickPreset}
+                  onClear={onClearPreset}
+                />
+                <div className="hint">
+                  按多次可累加時間，或按「清除」重新設定。
+                </div>
               </div>
-            ) : null}
-          </section>
+            </section>
+          </div>
         )}
       </main>
 

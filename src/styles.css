@@ -19,12 +19,13 @@
 }
 
 .app.mode-countdown {
-  --bg1: #8dbe78;
-  --bg2: #4d7844;
+  --bg1: #9d6bdc;
+  --bg2: #6b40a4;
   --bg-highlight1: rgba(255, 255, 255, 0.10);
   --bg-highlight2: rgba(255, 255, 255, 0.08);
-  --water-top: rgba(193, 232, 173, 0.45);
-  --water-bottom: rgba(114, 176, 104, 0.26);
+  --water-top: rgba(0, 128, 255, 0.7);
+  --water-bottom: rgba(0, 128, 255, 0.55);
+  --water-surface: rgba(255,255,255,0.42);
 }
 
 * { box-sizing: border-box; }
@@ -88,8 +89,17 @@ a { color: inherit; }
   gap: 16px;
   align-items: start;
 }
+.main.mode-countdown .stopwatchGrid {
+  display: grid;
+  grid-template-columns: minmax(360px, 1fr) minmax(240px, 320px);
+  gap: 16px;
+  align-items: start;
+}
 @media (max-width: 840px) {
   .main.mode-stopwatch .stopwatchGrid {
+    grid-template-columns: 1fr;
+  }
+  .main.mode-countdown .stopwatchGrid {
     grid-template-columns: 1fr;
   }
 }
@@ -112,6 +122,14 @@ a { color: inherit; }
   border-radius: 18px;
   background: radial-gradient(420px 240px at 50% 40%, rgba(255,255,255,0.06), transparent 70%);
   overflow: hidden;
+}
+.countdownCard {
+  background: #BE77FF;
+  border-color: rgba(255,255,255,0.26);
+}
+.sideCard {
+  background: #BE77FF;
+  border-color: rgba(255,255,255,0.26);
 }
 
 .vizOverlay {
@@ -231,6 +249,12 @@ a { color: inherit; }
 }
 .chip:hover { transform: translateY(-1px); background: rgba(255,255,255,0.10); color: var(--text); }
 .chip:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+.chipClear {
+  color: #210b40;
+  background: rgba(255,255,255,0.85);
+  border-color: rgba(255,255,255,0.92);
+}
+.chipClear:hover { background: #fff; color: #210b40; }
 
 .hint {
   margin-top: 10px;
@@ -294,6 +318,24 @@ a { color: inherit; }
   transform: rotate(-90deg);
   transition: stroke-dashoffset 140ms linear;
 }
+.ringFlash {
+  position: absolute;
+  width: 320px;
+  height: 320px;
+  border-radius: 999px;
+  border: 2px solid rgba(255,255,255,0.85);
+  z-index: 4;
+  box-shadow:
+    0 0 30px rgba(255,255,255,0.55),
+    0 0 70px rgba(255,255,255,0.35);
+  pointer-events: none;
+  animation: ringFlash 0.9s ease-out forwards;
+}
+@keyframes ringFlash {
+  0% { opacity: 0; transform: scale(0.9); }
+  25% { opacity: 1; transform: scale(1); }
+  100% { opacity: 0; transform: scale(1.14); }
+}
 
 /* Water */
 .waterGauge {
@@ -314,9 +356,17 @@ a { color: inherit; }
 .waterFill {
   position: absolute;
   inset: 0;
-  transform: translateY(50%);
+  transform: translateY(var(--water-shift, 50%));
   transition: transform 180ms linear;
   background: linear-gradient(180deg, var(--water-top), var(--water-bottom));
+}
+.waterGaugeCountdown .waterFill {
+  background: linear-gradient(180deg, var(--water-top), var(--water-bottom));
+  animation: sway 6s ease-in-out infinite;
+}
+@keyframes sway {
+  0%, 100% { transform: translate(-6%, 0) translateY(var(--water-shift, 50%)); }
+  50% { transform: translate(6%, 0) translateY(var(--water-shift, 50%)); }
 }
 .waterPlate {
   position: absolute;

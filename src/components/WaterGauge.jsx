@@ -23,9 +23,16 @@ export default function WaterGauge({ level = 0.5, variant = "countdown", size = 
   const y = `${(1 - l) * 100}%`;
 
   return (
-    <div className="waterGauge" aria-hidden="true" style={{ width: size, height: size }}>
+    <div
+      className={`waterGauge ${variant === "countdown" ? "waterGaugeCountdown" : ""}`}
+      aria-hidden="true"
+      style={{ width: size, height: size }}
+    >
       <div className="waterSurface" style={{ top: y }} />
-      <div className="waterFill" style={{ transform: `translateY(${(1 - l) * 100}%)` }}>
+      <div
+        className="waterFill"
+        style={{ "--water-shift": `${(1 - l) * 100}%` }}
+      >
         <div className="wave wave1" />
         <div className="wave wave2" />
       </div>
