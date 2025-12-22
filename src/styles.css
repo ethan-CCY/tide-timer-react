@@ -394,8 +394,8 @@ a { color: inherit; }
   animation: sway 6s ease-in-out infinite;
 }
 @keyframes sway {
-  0%, 100% { transform: translate(-6%, 0) translateY(var(--water-shift, 50%)); }
-  50% { transform: translate(6%, 0) translateY(var(--water-shift, 50%)); }
+  0%, 100% { transform: translateX(-6%); }
+  50% { transform: translateX(6%); }
 }
 .waterPlate {
   position: absolute;
