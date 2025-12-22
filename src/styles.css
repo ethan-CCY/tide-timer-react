@@ -387,7 +387,9 @@ a { color: inherit; }
   transition: transform 180ms linear;
   background: linear-gradient(180deg, var(--water-top), var(--water-bottom));
 }
-.waterGaugeCountdown .waterFill {
+.waterGaugeCountdown .waterFillInner {
+  position: absolute;
+  inset: 0;
   background: linear-gradient(180deg, var(--water-top), var(--water-bottom));
   animation: sway 6s ease-in-out infinite;
 }
