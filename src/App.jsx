@@ -54,7 +54,7 @@ export default function App() {
       ? formatHMS(sw.elapsedMs, { showMs: true })
       : formatHMS(cd.remainingMs, { showMs: true });
   const isCountdownFinalSeconds =
-    mode === "countdown" && cd.totalMs > 0 && cd.remainingMs <= 5000;
+    mode === "countdown" && cd.totalMs > 0 && cd.remainingMs <= 10000;
 
   const onReset = () => {
     if (mode === "stopwatch") {
@@ -131,7 +131,7 @@ export default function App() {
         ) : (
           <div className="stopwatchGrid">
             <section className="card breathe timerCard countdownCard" aria-label="Countdown">
-              <div className="vizWrap">
+              <div className={`vizWrap ${isCountdownFinalSeconds ? "countdownAlert" : ""}`}>
                 <Ring progress={viz.ringProgress} size={300} />
                 <WaterGauge level={viz.waterLevel} variant={viz.waterVariant} size={260} />
                 <div className="vizOverlay">

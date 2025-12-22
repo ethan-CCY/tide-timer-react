@@ -19,8 +19,8 @@
 }
 
 .app.mode-countdown {
-  --bg1: #02F78E;
-  --bg2: #02F78E;
+  --bg1: #02C874;
+  --bg2: #02C874;
   --bg-highlight1: rgba(255, 255, 255, 0.12);
   --bg-highlight2: rgba(255, 255, 255, 0.10);
   --water-top: rgba(0, 128, 255, 0.75);
@@ -177,9 +177,14 @@ a { color: inherit; }
 .timePrimaryAlert .timeMs {
   color: #FF2D2D;
 }
+.countdownAlert .ringProgress,
+.countdownAlert .ringTrack {
+  animation: countdownFlash 1s steps(2, start) infinite;
+  stroke: rgba(255,255,255,0.9);
+}
 @keyframes countdownFlash {
   0% { opacity: 1; }
-  50% { opacity: 0.25; }
+  50% { opacity: 0.18; }
   100% { opacity: 1; }
 }
 
@@ -275,7 +280,7 @@ a { color: inherit; }
   text-align: center;
 }
 .countdownHint {
-  font-size: 18px;
+  font-size: 16px;
   margin-top: 0;
   margin-bottom: 12px;
   color: rgba(255,255,255,0.92);
@@ -283,26 +288,6 @@ a { color: inherit; }
 .countdownTools {
   display: flex;
   flex-direction: column;
-}
-.app.mode-countdown .chip {
-  background: #ffffff;
-  color: #35135d;
-  border-color: rgba(255,255,255,0.95);
-}
-.app.mode-countdown .chip:hover {
-  background: #f2f2f2;
-  color: #35135d;
-}
-.app.mode-countdown .chip:disabled {
-  color: #35135d;
-}
-.app.mode-countdown .chipClear {
-  background: #ffd580;
-  border-color: #ffc568;
-  color: #3f1a68;
-}
-.app.mode-countdown .chipClear:hover {
-  background: #ffce91;
 }
 
 .laps {
@@ -402,9 +387,6 @@ a { color: inherit; }
   transition: transform 180ms linear;
   background: linear-gradient(180deg, var(--water-top), var(--water-bottom));
 }
-.waterFillStatic {
-  animation: none;
-}
 .waterGaugeCountdown .waterFill {
   background: linear-gradient(180deg, var(--water-top), var(--water-bottom));
   animation: sway 6s ease-in-out infinite;
@@ -428,29 +410,6 @@ a { color: inherit; }
   filter: blur(0.2px);
   transition: top 180ms linear;
   opacity: 0.8;
-}
-.waterGaugeStopwatch {
-  background: radial-gradient(200px 140px at 50% 30%, rgba(255,255,255,0.12), rgba(0,0,0,0.08));
-  border: 1px solid rgba(255,255,255,0.12);
-  box-shadow: inset 0 -30px 60px rgba(0,0,0,0.18);
-}
-.waterGaugeStopwatch .waterFill {
-  background: linear-gradient(180deg, rgba(136, 210, 255, 0.5), rgba(72, 158, 230, 0.34));
-}
-.waterGaugeStopwatch .wave {
-  animation: none;
-  opacity: 0.6;
-}
-.waterGaugeStopwatch .wave2 {
-  opacity: 0.38;
-}
-.waterSurfaceWave {
-  height: 10px;
-  background-image: radial-gradient(circle at 20px 8px, rgba(255,255,255,0.85) 0, rgba(255,255,255,0.65) 55%, transparent 65%);
-  background-size: 60px 14px;
-  background-repeat: repeat-x;
-  opacity: 0.9;
-  filter: drop-shadow(0 0 6px rgba(255,255,255,0.35));
 }
 
 /* Waves */
