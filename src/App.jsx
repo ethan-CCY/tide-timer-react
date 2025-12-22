@@ -12,7 +12,7 @@ import { useCountdown, useStopwatch } from "./lib/hooks.js";
 export default function App() {
   const [mode, setMode] = useState("stopwatch"); // "stopwatch" | "countdown"
   const sw = useStopwatch();
-  const cd = useCountdown(5 * 60 * 1000);
+  const cd = useCountdown(0);
 
   const [laps, setLaps] = useState([]);
 
@@ -25,27 +25,36 @@ export default function App() {
       const progress = clamp(cd.remainingMs / total, 0, 1);
       return {
         ringProgress: progress,
-        waterLevel: progress,
-        title: "倒數",
-        subtitle: `總長 ${formatHMS(cd.totalMs)}`,
+        waterLevel: 1 - progress,
+        waterVariant: "countdown",
+        title: `倒數時長 ${formatHMS(cd.totalMs).slice(0, 5)}`,
+        subtitle: "",
+        flashKey: null,
       };
     }
 
     // Stopwatch: make it feel calm by looping visuals each minute
-    const loop = 60 * 1000;
+    const loop = 10 * 1000;
     const phase = (sw.elapsedMs % loop) / loop;
     return {
       ringProgress: phase,
-      waterLevel: 0.15 + phase * 0.7, // keep some padding (never fully empty/full)
-      title: "碼表",
-      subtitle: sw.isRunning ? "流動中…" : "休息一下也很好",
+      waterLevel: 0.5,
+      waterVariant: "stopwatch",
+      title: "碼錶",
+      subtitle: sw.isRunning ? "流動中…" : "跑跑跑~向前跑~",
+      flashKey:
+        sw.isRunning && sw.elapsedMs >= 10000
+          ? Math.floor(sw.elapsedMs / 10000)
+          : null,
     };
   }, [mode, sw.elapsedMs, sw.isRunning, cd.remainingMs, cd.totalMs]);
 
   const primaryTime =
     mode === "stopwatch"
       ? formatHMS(sw.elapsedMs, { showMs: true })
-      : formatHMS(cd.remainingMs);
+      : formatHMS(cd.remainingMs, { showMs: true });
+  const isCountdownFinalSeconds =
+    mode === "countdown" && cd.totalMs > 0 && cd.remainingMs <= 10000;
 
   const onReset = () => {
     if (mode === "stopwatch") {
@@ -62,15 +71,19 @@ export default function App() {
   };
 
   const onPickPreset = (ms) => {
-    cd.setTotalWhileStopped(ms);
+    cd.addTotalWhileStopped(ms);
+  };
+
+  const onClearPreset = () => {
+    cd.clearTotalWhileStopped();
   };
 
   return (
-    <div className="app">
+    <div className={`app mode-${mode}`}>
       <header className="header">
         <div className="brand">
           <div className="brandTitle">Tide Timer</div>
-          <div className="brandTag">療癒型碼表 / 倒數</div>
+          <div className="brandTag">療癒型碼錶 / 倒數</div>
         </div>
         <ModeSwitch mode={mode} setMode={(m) => {
           // stop running when switching modes (keeps mental model simple)
@@ -80,70 +93,86 @@ export default function App() {
         }} />
       </header>
 
-      <main className="main">
-        <section className="card breathe" aria-label="Timer">
-          <div className="vizWrap">
-            <Ring progress={viz.ringProgress} />
-            <WaterGauge level={viz.waterLevel} />
-            <div className="vizOverlay">
-              <div className="modeTitle">{viz.title}</div>
-              <TimeDisplay primary={primaryTime} secondary={viz.subtitle} />
-            </div>
-          </div>
-
-          {mode === "countdown" ? (
-            <div className="countdownTools">
-              <CountdownPresets disabled={cd.isRunning} onPick={onPickPreset} />
-              <div className="hint">
-                小提示：使用快速鍵，依點擊次數，初始時間可累加，或按 "清除" 重新設定。
+      <main className={`main mode-${mode}`}>
+        {mode === "stopwatch" ? (
+          <div className="stopwatchGrid">
+            <section className="card breathe timerCard" aria-label="Stopwatch">
+              <div className="vizWrap">
+                <Ring progress={viz.ringProgress} size={300} />
+                <WaterGauge level={viz.waterLevel} variant={viz.waterVariant} size={260} />
+                {mode === "stopwatch" && viz.flashKey !== null ? (
+                  <div className="ringFlash" key={viz.flashKey} />
+                ) : null}
+                <div className="vizOverlay">
+                  <div className="modeTitle">{viz.title}</div>
+                  <TimeDisplay primary={primaryTime} secondary={viz.subtitle} />
+                </div>
               </div>
-            </div>
-          ) : null}
 
-          <Controls
-            isRunning={active.isRunning}
-            onStart={active.start}
-            onPause={active.pause}
-            onReset={onReset}
-            extraLeft={
-              mode === "stopwatch" ? (
-                <button className="btn" onClick={onLap} disabled={!sw.isRunning}>
-                  Lap
-                </button>
-              ) : null
-            }
-          />
+              <Controls
+                isRunning={active.isRunning}
+                onStart={active.start}
+                onPause={active.pause}
+                onReset={onReset}
+                extraLeft={
+                  <button
+                    className="btn btnLap"
+                    onClick={onLap}
+                    disabled={!sw.isRunning}
+                  >
+                    記錄
+                  </button>
+                }
+              />
+            </section>
 
-          {mode === "stopwatch" ? <LapList laps={laps} /> : null}
-
-          {mode === "countdown" && cd.remainingMs === 0 ? (
-            <div className="done" role="status">
-              完成 ✨
-            </div>
-          ) : null}
-        </section>
-
-        <section className="side">
-          <div className="panel">
-            <div className="panelTitle">你可以接著練的功能</div>
-            <ul className="panelList">
-              <li>倒數自訂：分鐘/秒輸入、滑桿、+10s/-10s</li>
-              <li>音效開關（完成提示音）</li>
-              <li>localStorage：記住上次模式與倒數秒數</li>
-              <li>更療癒：水波更慢、呼吸週期可調</li>
-              <li>統計：今日累積專注時間 / 完成次數</li>
-            </ul>
+            <LapList laps={laps} />
           </div>
+        ) : (
+          <div className="stopwatchGrid">
+            <section className="card breathe timerCard countdownCard" aria-label="Countdown">
+              <div className={`vizWrap ${isCountdownFinalSeconds ? "countdownAlert" : ""}`}>
+                <Ring progress={viz.ringProgress} size={300} />
+                <WaterGauge level={viz.waterLevel} variant={viz.waterVariant} size={260} />
+                <div className="vizOverlay">
+                  <div className="modeTitle">{viz.title}</div>
+                  <TimeDisplay
+                    primary={primaryTime}
+                    secondary={viz.subtitle}
+                    primaryClassName={isCountdownFinalSeconds ? "timePrimaryAlert" : ""}
+                  />
+                </div>
+              </div>
 
-          <div className="panel">
-            <div className="panelTitle">部署到 GitHub Pages</div>
-            <ol className="panelList">
-              <li>把整包檔案推到你的 GitHub repo</li>
-              <li>Repo Settings → Pages → Source 選 GitHub Actions</li>
-              <li>等待 Actions 跑完，就會自動發佈</li>
-            </ol>
+              <Controls
+                isRunning={active.isRunning}
+                onStart={active.start}
+                onPause={active.pause}
+                onReset={onReset}
+                extraLeft={null}
+              />
+
+              {mode === "countdown" && cd.remainingMs === 0 ? (
+                <div className="done" role="status">
+                  完成 ✨
+                </div>
+              ) : null}
+            </section>
+
+            <section className="card sideCard" aria-label="Countdown presets">
+              <div className="countdownTools">
+                <div className="hint countdownHint">
+                  按多次可累加時間，或按「清除」重新設定。
+                </div>
+                <CountdownPresets
+                  disabled={cd.isRunning}
+                  onPick={onPickPreset}
+                  onClear={onClearPreset}
+                />
+              </div>
+            </section>
           </div>
-        </section>
+        )}
       </main>
 
       <footer className="footer">

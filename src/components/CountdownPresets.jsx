@@ -8,7 +8,7 @@ const PRESETS = [
   { label: "25 分", ms: 25 * 60 * 1000 },
 ];
 
-export default function CountdownPresets({ disabled, onPick }) {
+export default function CountdownPresets({ disabled, onPick, onClear }) {
   return (
     <div className="presets">
       {PRESETS.map((p) => (
@@ -21,6 +21,14 @@ export default function CountdownPresets({ disabled, onPick }) {
           {p.label}
         </button>
       ))}
+      <button
+        className="chip chipClear"
+        onClick={onClear}
+        disabled={disabled}
+        aria-label="清除預設時間"
+      >
+        清除
+      </button>
     </div>
   );
 }

@@ -1,26 +1,51 @@
 :root {
-  --bg1: #0b1326;
-  --bg2: #0a1b2e;
-  --card: rgba(255,255,255,0.06);
-  --stroke: rgba(255,255,255,0.12);
+  --bg1: #cdb997;
+  --bg2: #9f7d57;
+  --bg-highlight1: rgba(255, 255, 255, 0.12);
+  --bg-highlight2: rgba(255, 255, 255, 0.1);
+  --card: rgba(255,255,255,0.08);
+  --stroke: rgba(255,255,255,0.14);
   --stroke2: rgba(255,255,255,0.22);
-  --text: rgba(255,255,255,0.92);
-  --muted: rgba(255,255,255,0.68);
-  --muted2: rgba(255,255,255,0.55);
-  --shadow: 0 18px 60px rgba(0,0,0,0.55);
+  --text: rgba(255,255,255,0.94);
+  --muted: rgba(255,255,255,0.78);
+  --muted2: rgba(255,255,255,0.62);
+  --shadow: 0 18px 60px rgba(0,0,0,0.35);
+  --water-top: rgba(136, 210, 255, 0.45);
+  --water-bottom: rgba(72, 158, 230, 0.24);
+  --water-surface: rgba(255,255,255,0.24);
+  --cta-start: #7fcf7c;
+  --cta-pause: #e25656;
+  --cta-reset: #FF9224;
+}
+
+.app.mode-countdown {
+  --bg1: #02C874;
+  --bg2: #02C874;
+  --bg-highlight1: rgba(255, 255, 255, 0.12);
+  --bg-highlight2: rgba(255, 255, 255, 0.10);
+  --water-top: rgba(0, 128, 255, 0.75);
+  --water-bottom: rgba(0, 128, 255, 0.60);
+  --water-surface: rgba(255,255,255,0.50);
 }
 
 * { box-sizing: border-box; }
 html, body { height: 100%; margin: 0; font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", "Noto Sans TC", Arial; }
 body {
   color: var(--text);
-  background: radial-gradient(900px 450px at 20% 10%, rgba(130, 200, 255, 0.18), transparent 60%),
-              radial-gradient(900px 450px at 80% 15%, rgba(120, 160, 255, 0.14), transparent 55%),
-              linear-gradient(160deg, var(--bg1), var(--bg2));
+  background: #0f0f0f;
 }
 
 a { color: inherit; }
-.app { min-height: 100%; display: flex; flex-direction: column; padding: 24px; gap: 18px; }
+.app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding: 24px;
+  gap: 18px;
+  background: radial-gradient(900px 480px at 20% 12%, var(--bg-highlight1), transparent 60%),
+              radial-gradient(900px 480px at 80% 14%, var(--bg-highlight2), transparent 55%),
+              linear-gradient(160deg, var(--bg1), var(--bg2));
+}
 
 .header {
   display: flex; align-items: center; justify-content: space-between;
@@ -51,12 +76,32 @@ a { color: inherit; }
 
 .main {
   display: grid;
-  grid-template-columns: 1.2fr 0.8fr;
-  gap: 18px;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 16px;
+  align-items: start;
+  max-width: 1100px;
+  width: 100%;
+  margin: 0 auto;
+}
+.main.mode-stopwatch .stopwatchGrid {
+  display: grid;
+  grid-template-columns: minmax(360px, 1fr) minmax(240px, 320px);
+  gap: 16px;
   align-items: start;
 }
-@media (max-width: 980px) {
-  .main { grid-template-columns: 1fr; }
+.main.mode-countdown .stopwatchGrid {
+  display: grid;
+  grid-template-columns: minmax(360px, 1fr) minmax(240px, 320px);
+  gap: 16px;
+  align-items: start;
+}
+@media (max-width: 840px) {
+  .main.mode-stopwatch .stopwatchGrid {
+    grid-template-columns: 1fr;
+  }
+  .main.mode-countdown .stopwatchGrid {
+    grid-template-columns: 1fr;
+  }
 }
 
 .card {
@@ -71,33 +116,88 @@ a { color: inherit; }
 
 .vizWrap {
   position: relative;
-  height: 360px;
+  height: 400px;
   display: grid;
   place-items: center;
   border-radius: 18px;
   background: radial-gradient(420px 240px at 50% 40%, rgba(255,255,255,0.06), transparent 70%);
   overflow: hidden;
 }
+.countdownCard {
+  background: #BE77FF;
+  border-color: rgba(255,255,255,0.26);
+}
+.sideCard {
+  background: #BE77FF;
+  border-color: rgba(255,255,255,0.26);
+}
 
 .vizOverlay {
   position: absolute;
   inset: 0;
-  display: grid;
-  place-items: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   text-align: center;
   pointer-events: none;
-  padding-top: 10px;
 }
-.modeTitle { font-size: 14px; color: var(--muted); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 10px; }
+.modeTitle {
+  position: absolute;
+  top: 18px;
+  left: 0;
+  right: 0;
+  font-size: 14px;
+  color: var(--muted);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
 
-.timeDisplay { display: grid; gap: 10px; }
+.timeDisplay { display: grid; gap: 10px; justify-items: center; }
 .timePrimary {
-  font-size: 44px;
+  font-size: 48px;
   font-weight: 700;
   letter-spacing: 0.8px;
   text-shadow: 0 10px 20px rgba(0,0,0,0.35);
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+  font-variant-numeric: tabular-nums;
+}
+.timeMain { font-variant-numeric: inherit; }
+.timeMs {
+  font-size: 26px;
+  opacity: 0.88;
+  font-variant-numeric: tabular-nums;
 }
 .timeSecondary { font-size: 13px; color: var(--muted); }
+.timePrimaryAlert {
+  color: #FF2D2D;
+  animation: countdownFlash 1s steps(2, start) infinite;
+}
+.timePrimaryAlert .timeMs {
+  color: #FF2D2D;
+}
+.countdownAlert .ringProgress,
+.countdownAlert .ringTrack {
+  animation: countdownFlash 1s steps(2, start) infinite;
+  stroke: rgba(255,255,255,0.9);
+}
+@keyframes countdownFlash {
+  0% { opacity: 1; }
+  50% { opacity: 0.18; }
+  100% { opacity: 1; }
+}
+
+.stopwatchGrid .timerCard {
+  max-width: 700px;
+}
+.lapCard {
+  min-height: 100%;
+}
+.lapsEmpty {
+  color: var(--muted2);
+  font-size: 13px;
+}
 
 .controls { margin-top: 14px; }
 .controlsRow {
@@ -111,14 +211,42 @@ a { color: inherit; }
   padding: 10px 14px;
   border-radius: 14px;
   transition: transform 120ms ease, background 200ms ease, border 200ms ease;
+  font-weight: 700;
 }
 .btn:hover { transform: translateY(-1px); background: rgba(255,255,255,0.10); }
 .btn:disabled { opacity: 0.55; cursor: not-allowed; transform: none; }
 .btnPrimary {
   border: 1px solid rgba(255,255,255,0.18);
-  background: rgba(255,255,255,0.14);
   padding: 10px 18px;
 }
+.btnStart {
+  background: var(--cta-start);
+  border-color: #6bbf68;
+  color: #0f2b12;
+  box-shadow: 0 14px 30px rgba(127, 207, 124, 0.30);
+}
+.btnStart:hover { background: #74c66f; }
+.btnPause {
+  background: var(--cta-pause);
+  border-color: #d44c4c;
+  color: #fff;
+  box-shadow: 0 14px 30px rgba(226, 86, 86, 0.32);
+}
+.btnPause:hover { background: #d84c4c; }
+.btnReset {
+  background: var(--cta-reset);
+  border-color: #f78b1f;
+  color: #fff;
+  box-shadow: 0 12px 26px rgba(255, 146, 36, 0.32);
+}
+.btnReset:hover { background: #ff9f3c; }
+.btnLap {
+  background: #84C1FF;
+  border-color: #6ca7e5;
+  color: #0d2a55;
+  box-shadow: 0 10px 22px rgba(132, 193, 255, 0.25);
+}
+.btnLap:hover { background: #8ec7ff; }
 
 .presets {
   display: flex;
@@ -138,12 +266,28 @@ a { color: inherit; }
 }
 .chip:hover { transform: translateY(-1px); background: rgba(255,255,255,0.10); color: var(--text); }
 .chip:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+.chipClear {
+  color: #210b40;
+  background: rgba(255,255,255,0.85);
+  border-color: rgba(255,255,255,0.92);
+}
+.chipClear:hover { background: #fff; color: #210b40; }
 
 .hint {
   margin-top: 10px;
   font-size: 12px;
   color: var(--muted2);
   text-align: center;
+}
+.countdownHint {
+  font-size: 16px;
+  margin-top: 0;
+  margin-bottom: 12px;
+  color: rgba(255,255,255,0.92);
+}
+.countdownTools {
+  display: flex;
+  flex-direction: column;
 }
 
 .laps {
@@ -162,6 +306,11 @@ a { color: inherit; }
 }
 .lapIndex { color: var(--muted); font-variant-numeric: tabular-nums; }
 .lapTime { font-variant-numeric: tabular-nums; }
+.lapCard .laps {
+  margin-top: 0;
+  padding-top: 0;
+  border-top: 0;
+}
 
 .done {
   margin-top: 12px;
@@ -174,16 +323,6 @@ a { color: inherit; }
   background: radial-gradient(260px 140px at 50% 50%, rgba(255,255,255,0.12), rgba(255,255,255,0.05));
 }
 
-.side { display: grid; gap: 14px; }
-.panel {
-  background: rgba(255,255,255,0.05);
-  border: 1px solid rgba(255,255,255,0.10);
-  border-radius: 18px;
-  padding: 16px;
-  backdrop-filter: blur(14px);
-}
-.panelTitle { font-size: 14px; font-weight: 700; margin-bottom: 10px; }
-.panelList { margin: 0; padding-left: 18px; color: var(--muted); font-size: 13px; display: grid; gap: 8px; }
 .footer { text-align: center; color: var(--muted2); font-size: 12px; padding: 10px 0; }
 
 /* Breathing animation */
@@ -197,39 +336,79 @@ a { color: inherit; }
 
 /* Ring */
 .ring { position: absolute; inset: 0; margin: auto; filter: drop-shadow(0 10px 22px rgba(0,0,0,0.4)); }
-.ringTrack { fill: transparent; stroke: rgba(255,255,255,0.08); }
+.ringTrack { fill: transparent; stroke: rgba(255,255,255,0.10); }
 .ringProgress {
   fill: transparent;
-  stroke: rgba(255,255,255,0.22);
+  stroke: rgba(255,255,255,0.32);
   stroke-linecap: round;
   transform-origin: 50% 50%;
   transform: rotate(-90deg);
   transition: stroke-dashoffset 140ms linear;
 }
+.ringFlash {
+  position: absolute;
+  width: 320px;
+  height: 320px;
+  border-radius: 999px;
+  border: 2px solid rgba(255,255,255,0.85);
+  z-index: 4;
+  box-shadow:
+    0 0 30px rgba(255,255,255,0.55),
+    0 0 70px rgba(255,255,255,0.35);
+  pointer-events: none;
+  animation: ringFlash 0.9s ease-out forwards;
+}
+@keyframes ringFlash {
+  0% { opacity: 0; transform: scale(0.9); }
+  25% { opacity: 1; transform: scale(1); }
+  100% { opacity: 0; transform: scale(1.14); }
+}
 
 /* Water */
 .waterGauge {
   position: absolute;
-  width: 220px;
-  height: 220px;
+  width: 260px;
+  height: 260px;
   border-radius: 999px;
   overflow: hidden;
   border: 1px solid rgba(255,255,255,0.10);
-  background: radial-gradient(200px 140px at 50% 30%, rgba(255,255,255,0.08), rgba(0,0,0,0.06));
+  background: radial-gradient(200px 140px at 50% 30%, rgba(255,255,255,0.12), rgba(0,0,0,0.04));
   box-shadow: inset 0 -30px 60px rgba(0,0,0,0.25);
+}
+.waterGaugeStatic {
+  background: #000079;
+  border: 1px solid rgba(255,255,255,0.16);
+  box-shadow: none;
 }
 .waterFill {
   position: absolute;
   inset: 0;
-  transform: translateY(50%);
+  transform: translateY(var(--water-shift, 50%));
   transition: transform 180ms linear;
-  background: linear-gradient(180deg, rgba(160, 210, 255, 0.22), rgba(80, 150, 255, 0.10));
+  background: linear-gradient(180deg, var(--water-top), var(--water-bottom));
+}
+.waterGaugeCountdown .waterFillInner {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, var(--water-top), var(--water-bottom));
+  animation: sway 6s ease-in-out infinite;
+}
+@keyframes sway {
+  0%, 100% { transform: translateX(-6%); }
+  50% { transform: translateX(6%); }
+}
+.waterPlate {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: #000079;
+  box-shadow: none;
 }
 .waterSurface {
   position: absolute;
   left: 0; right: 0;
   height: 2px;
-  background: rgba(255,255,255,0.14);
+  background: var(--water-surface);
   filter: blur(0.2px);
   transition: top 180ms linear;
   opacity: 0.8;

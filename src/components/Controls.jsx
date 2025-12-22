@@ -13,14 +13,14 @@ export default function Controls({
       <div className="controlsRow">
         {extraLeft}
         <button
-          className="btn btnPrimary"
+          className={`btn btnPrimary ${isRunning ? "btnPause" : "btnStart"}`}
           onClick={isRunning ? onPause : onStart}
-          aria-label={isRunning ? "Pause" : "Start"}
+          aria-label={isRunning ? "暫停" : "開始"}
         >
-          {isRunning ? "Pause" : "Start"}
+          {isRunning ? "暫停" : "開始"}
         </button>
-        <button className="btn" onClick={onReset} aria-label="Reset">
-          Reset
+        <button className="btn btnReset" onClick={onReset} aria-label="重新計時">
+          重新計時
         </button>
         {extraRight}
       </div>
