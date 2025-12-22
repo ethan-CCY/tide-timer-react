@@ -12,7 +12,7 @@ import { useCountdown, useStopwatch } from "./lib/hooks.js";
 export default function App() {
   const [mode, setMode] = useState("stopwatch"); // "stopwatch" | "countdown"
   const sw = useStopwatch();
-  const cd = useCountdown(5 * 60 * 1000);
+  const cd = useCountdown(0);
 
   const [laps, setLaps] = useState([]);
 
@@ -53,6 +53,8 @@ export default function App() {
     mode === "stopwatch"
       ? formatHMS(sw.elapsedMs, { showMs: true })
       : formatHMS(cd.remainingMs, { showMs: true });
+  const isCountdownFinalSeconds =
+    mode === "countdown" && cd.totalMs > 0 && cd.remainingMs <= 10000;
 
   const onReset = () => {
     if (mode === "stopwatch") {
@@ -129,12 +131,16 @@ export default function App() {
         ) : (
           <div className="stopwatchGrid">
             <section className="card breathe timerCard countdownCard" aria-label="Countdown">
-              <div className="vizWrap">
+              <div className={`vizWrap ${isCountdownFinalSeconds ? "countdownAlert" : ""}`}>
                 <Ring progress={viz.ringProgress} size={300} />
                 <WaterGauge level={viz.waterLevel} variant={viz.waterVariant} size={260} />
                 <div className="vizOverlay">
                   <div className="modeTitle">{viz.title}</div>
-                  <TimeDisplay primary={primaryTime} secondary={viz.subtitle} />
+                  <TimeDisplay
+                    primary={primaryTime}
+                    secondary={viz.subtitle}
+                    primaryClassName={isCountdownFinalSeconds ? "timePrimaryAlert" : ""}
+                  />
                 </div>
               </div>
 
@@ -155,14 +161,14 @@ export default function App() {
 
             <section className="card sideCard" aria-label="Countdown presets">
               <div className="countdownTools">
+                <div className="hint countdownHint">
+                  按多次可累加時間，或按「清除」重新設定。
+                </div>
                 <CountdownPresets
                   disabled={cd.isRunning}
                   onPick={onPickPreset}
                   onClear={onClearPreset}
                 />
-                <div className="hint">
-                  按多次可累加時間，或按「清除」重新設定。
-                </div>
               </div>
             </section>
           </div>

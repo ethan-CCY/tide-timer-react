@@ -19,8 +19,8 @@ export default function Controls({
         >
           {isRunning ? "暫停" : "開始"}
         </button>
-        <button className="btn btnReset" onClick={onReset} aria-label="重設">
-          重設
+        <button className="btn btnReset" onClick={onReset} aria-label="重新計時">
+          重新計時
         </button>
         {extraRight}
       </div>

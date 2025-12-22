@@ -15,17 +15,17 @@
   --water-surface: rgba(255,255,255,0.24);
   --cta-start: #7fcf7c;
   --cta-pause: #e25656;
-  --cta-reset: #a5724b;
+  --cta-reset: #FF9224;
 }
 
 .app.mode-countdown {
-  --bg1: #9d6bdc;
-  --bg2: #6b40a4;
-  --bg-highlight1: rgba(255, 255, 255, 0.10);
-  --bg-highlight2: rgba(255, 255, 255, 0.08);
-  --water-top: rgba(0, 128, 255, 0.7);
-  --water-bottom: rgba(0, 128, 255, 0.55);
-  --water-surface: rgba(255,255,255,0.42);
+  --bg1: #02C874;
+  --bg2: #02C874;
+  --bg-highlight1: rgba(255, 255, 255, 0.12);
+  --bg-highlight2: rgba(255, 255, 255, 0.10);
+  --water-top: rgba(0, 128, 255, 0.75);
+  --water-bottom: rgba(0, 128, 255, 0.60);
+  --water-surface: rgba(255,255,255,0.50);
 }
 
 * { box-sizing: border-box; }
@@ -170,6 +170,23 @@ a { color: inherit; }
   font-variant-numeric: tabular-nums;
 }
 .timeSecondary { font-size: 13px; color: var(--muted); }
+.timePrimaryAlert {
+  color: #FF2D2D;
+  animation: countdownFlash 1s steps(2, start) infinite;
+}
+.timePrimaryAlert .timeMs {
+  color: #FF2D2D;
+}
+.countdownAlert .ringProgress,
+.countdownAlert .ringTrack {
+  animation: countdownFlash 1s steps(2, start) infinite;
+  stroke: rgba(255,255,255,0.9);
+}
+@keyframes countdownFlash {
+  0% { opacity: 1; }
+  50% { opacity: 0.18; }
+  100% { opacity: 1; }
+}
 
 .stopwatchGrid .timerCard {
   max-width: 700px;
@@ -218,11 +235,11 @@ a { color: inherit; }
 .btnPause:hover { background: #d84c4c; }
 .btnReset {
   background: var(--cta-reset);
-  border-color: #8b5f3f;
+  border-color: #f78b1f;
   color: #fff;
-  box-shadow: 0 12px 26px rgba(165, 114, 75, 0.32);
+  box-shadow: 0 12px 26px rgba(255, 146, 36, 0.32);
 }
-.btnReset:hover { background: #9b6946; }
+.btnReset:hover { background: #ff9f3c; }
 .btnLap {
   background: #84C1FF;
   border-color: #6ca7e5;
@@ -261,6 +278,16 @@ a { color: inherit; }
   font-size: 12px;
   color: var(--muted2);
   text-align: center;
+}
+.countdownHint {
+  font-size: 16px;
+  margin-top: 0;
+  margin-bottom: 12px;
+  color: rgba(255,255,255,0.92);
+}
+.countdownTools {
+  display: flex;
+  flex-direction: column;
 }
 
 .laps {
