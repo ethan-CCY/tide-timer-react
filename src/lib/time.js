@@ -7,7 +7,7 @@ export function formatHMS(ms, { showMs = false } = {}) {
   const h = Math.floor(total / 3600000);
   const m = Math.floor((total % 3600000) / 60000);
   const s = Math.floor((total % 60000) / 1000);
-  const msPart = total % 1000;
+  const msPart = Math.floor((total % 1000) / 10);
 
   const mm = String(m).padStart(2, "0");
   const ss = String(s).padStart(2, "0");
@@ -16,5 +16,5 @@ export function formatHMS(ms, { showMs = false } = {}) {
   const base = `${hh}:${mm}:${ss}`;
   if (!showMs) return base;
 
-  return `${base}.${String(msPart).padStart(3, "0")}`;
+  return `${base}.${String(msPart).padStart(2, "0")}`;
 }
