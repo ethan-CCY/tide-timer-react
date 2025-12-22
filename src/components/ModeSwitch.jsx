@@ -9,7 +9,7 @@ export default function ModeSwitch({ mode, setMode }) {
         role="tab"
         aria-selected={mode === "stopwatch"}
       >
-        碼表
+        碼錶
       </button>
       <button
         className={`pill ${mode === "countdown" ? "active" : ""}`}

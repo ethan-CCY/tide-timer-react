@@ -26,19 +26,22 @@ export default function App() {
       return {
         ringProgress: progress,
         waterLevel: progress,
+        waterVariant: "countdown",
         title: "倒數",
         subtitle: `總長 ${formatHMS(cd.totalMs)}`,
+        flashKey: null,
       };
     }
 
     // Stopwatch: make it feel calm by looping visuals each minute
-    const loop = 60 * 1000;
+    const loop = 10 * 1000;
     const phase = (sw.elapsedMs % loop) / loop;
     return {
       ringProgress: phase,
-      waterLevel: 0.15 + phase * 0.7, // keep some padding (never fully empty/full)
-      title: "碼表",
-      subtitle: sw.isRunning ? "流動中…" : "休息一下也很好",
+      waterLevel: 0.5,
+      waterVariant: "stopwatch",
+      title: "碼錶",
+      subtitle: sw.isRunning ? "流動中…" : "跑跑跑~向前跑~",
     };
   }, [mode, sw.elapsedMs, sw.isRunning, cd.remainingMs, cd.totalMs]);
 
@@ -70,7 +73,7 @@ export default function App() {
       <header className="header">
         <div className="brand">
           <div className="brandTitle">Tide Timer</div>
-          <div className="brandTag">療癒型碼表 / 倒數</div>
+          <div className="brandTag">療癒型碼錶 / 倒數</div>
         </div>
         <ModeSwitch mode={mode} setMode={(m) => {
           // stop running when switching modes (keeps mental model simple)
@@ -80,48 +83,73 @@ export default function App() {
         }} />
       </header>
 
-      <main className="main">
-        <section className="card breathe" aria-label="Timer">
-          <div className="vizWrap">
-            <Ring progress={viz.ringProgress} />
-            <WaterGauge level={viz.waterLevel} />
-            <div className="vizOverlay">
-              <div className="modeTitle">{viz.title}</div>
-              <TimeDisplay primary={primaryTime} secondary={viz.subtitle} />
-            </div>
-          </div>
+      <main className={`main mode-${mode}`}>
+        {mode === "stopwatch" ? (
+          <div className="stopwatchGrid">
+            <section className="card breathe timerCard" aria-label="Stopwatch">
+              <div className="vizWrap">
+                <Ring progress={viz.ringProgress} size={300} />
+                <WaterGauge level={viz.waterLevel} variant={viz.waterVariant} size={260} />
+                <div className="vizOverlay">
+                  <div className="modeTitle">{viz.title}</div>
+                  <TimeDisplay primary={primaryTime} secondary={viz.subtitle} />
+                </div>
+              </div>
 
-          {mode === "countdown" ? (
-            <div className="countdownTools">
-              <CountdownPresets disabled={cd.isRunning} onPick={onPickPreset} />
-              <div className="hint">
-                小提示：使用快速鍵，依點擊次數，初始時間可累加，或按 "清除" 重新設定。
+              <Controls
+                isRunning={active.isRunning}
+                onStart={active.start}
+                onPause={active.pause}
+                onReset={onReset}
+                extraLeft={
+                  <button
+                    className="btn btnLap"
+                    onClick={onLap}
+                    disabled={!sw.isRunning}
+                  >
+                    記錄
+                  </button>
+                }
+              />
+            </section>
+
+            <LapList laps={laps} />
+          </div>
+        ) : (
+          <section className="card breathe" aria-label="Timer">
+            <div className="vizWrap">
+              <Ring progress={viz.ringProgress} size={300} />
+              <WaterGauge level={viz.waterLevel} variant={viz.waterVariant} size={260} />
+              <div className="vizOverlay">
+                <div className="modeTitle">{viz.title}</div>
+                <TimeDisplay primary={primaryTime} secondary={viz.subtitle} />
               </div>
             </div>
-          ) : null}
 
-          <Controls
-            isRunning={active.isRunning}
-            onStart={active.start}
-            onPause={active.pause}
-            onReset={onReset}
-            extraLeft={
-              mode === "stopwatch" ? (
-                <button className="btn" onClick={onLap} disabled={!sw.isRunning}>
-                  Lap
-                </button>
-              ) : null
-            }
-          />
+            {mode === "countdown" ? (
+              <div className="countdownTools">
+                <CountdownPresets disabled={cd.isRunning} onPick={onPickPreset} />
+                <div className="hint">
+                  小提示：使用快速鍵，依點擊次數，初始時間可累加，或按 "清除" 重新設定。
+                </div>
+              </div>
+            ) : null}
 
-          {mode === "stopwatch" ? <LapList laps={laps} /> : null}
+            <Controls
+              isRunning={active.isRunning}
+              onStart={active.start}
+              onPause={active.pause}
+              onReset={onReset}
+              extraLeft={null}
+            />
 
-          {mode === "countdown" && cd.remainingMs === 0 ? (
-            <div className="done" role="status">
-              完成 ✨
-            </div>
-          ) : null}
-        </section>
+            {mode === "countdown" && cd.remainingMs === 0 ? (
+              <div className="done" role="status">
+                完成 ✨
+              </div>
+            ) : null}
+          </section>
+        )}
       </main>
 
       <footer className="footer">

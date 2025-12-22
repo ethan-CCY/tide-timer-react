@@ -75,12 +75,23 @@ a { color: inherit; }
 
 .main {
   display: grid;
-  grid-template-columns: 1fr;
-  gap: 18px;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 16px;
   align-items: start;
   max-width: 1100px;
   width: 100%;
   margin: 0 auto;
+}
+.main.mode-stopwatch .stopwatchGrid {
+  display: grid;
+  grid-template-columns: minmax(360px, 1fr) minmax(240px, 320px);
+  gap: 16px;
+  align-items: start;
+}
+@media (max-width: 840px) {
+  .main.mode-stopwatch .stopwatchGrid {
+    grid-template-columns: 1fr;
+  }
 }
 
 .card {
@@ -95,7 +106,7 @@ a { color: inherit; }
 
 .vizWrap {
   position: relative;
-  height: 360px;
+  height: 400px;
   display: grid;
   place-items: center;
   border-radius: 18px;
@@ -106,13 +117,22 @@ a { color: inherit; }
 .vizOverlay {
   position: absolute;
   inset: 0;
-  display: grid;
-  place-items: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   text-align: center;
   pointer-events: none;
-  padding-top: 10px;
 }
-.modeTitle { font-size: 14px; color: var(--muted); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 10px; }
+.modeTitle {
+  position: absolute;
+  top: 18px;
+  left: 0;
+  right: 0;
+  font-size: 14px;
+  color: var(--muted);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
 
 .timeDisplay { display: grid; gap: 10px; justify-items: center; }
 .timePrimary {
@@ -132,6 +152,17 @@ a { color: inherit; }
   font-variant-numeric: tabular-nums;
 }
 .timeSecondary { font-size: 13px; color: var(--muted); }
+
+.stopwatchGrid .timerCard {
+  max-width: 700px;
+}
+.lapCard {
+  min-height: 100%;
+}
+.lapsEmpty {
+  color: var(--muted2);
+  font-size: 13px;
+}
 
 .controls { margin-top: 14px; }
 .controlsRow {
@@ -174,6 +205,13 @@ a { color: inherit; }
   box-shadow: 0 12px 26px rgba(165, 114, 75, 0.32);
 }
 .btnReset:hover { background: #9b6946; }
+.btnLap {
+  background: #84C1FF;
+  border-color: #6ca7e5;
+  color: #0d2a55;
+  box-shadow: 0 10px 22px rgba(132, 193, 255, 0.25);
+}
+.btnLap:hover { background: #8ec7ff; }
 
 .presets {
   display: flex;
@@ -217,6 +255,11 @@ a { color: inherit; }
 }
 .lapIndex { color: var(--muted); font-variant-numeric: tabular-nums; }
 .lapTime { font-variant-numeric: tabular-nums; }
+.lapCard .laps {
+  margin-top: 0;
+  padding-top: 0;
+  border-top: 0;
+}
 
 .done {
   margin-top: 12px;
@@ -242,10 +285,10 @@ a { color: inherit; }
 
 /* Ring */
 .ring { position: absolute; inset: 0; margin: auto; filter: drop-shadow(0 10px 22px rgba(0,0,0,0.4)); }
-.ringTrack { fill: transparent; stroke: rgba(255,255,255,0.08); }
+.ringTrack { fill: transparent; stroke: rgba(255,255,255,0.10); }
 .ringProgress {
   fill: transparent;
-  stroke: rgba(255,255,255,0.22);
+  stroke: rgba(255,255,255,0.32);
   stroke-linecap: round;
   transform-origin: 50% 50%;
   transform: rotate(-90deg);
@@ -255,13 +298,18 @@ a { color: inherit; }
 /* Water */
 .waterGauge {
   position: absolute;
-  width: 220px;
-  height: 220px;
+  width: 260px;
+  height: 260px;
   border-radius: 999px;
   overflow: hidden;
   border: 1px solid rgba(255,255,255,0.10);
   background: radial-gradient(200px 140px at 50% 30%, rgba(255,255,255,0.12), rgba(0,0,0,0.04));
   box-shadow: inset 0 -30px 60px rgba(0,0,0,0.25);
+}
+.waterGaugeStatic {
+  background: #000079;
+  border: 1px solid rgba(255,255,255,0.16);
+  box-shadow: none;
 }
 .waterFill {
   position: absolute;
@@ -269,6 +317,13 @@ a { color: inherit; }
   transform: translateY(50%);
   transition: transform 180ms linear;
   background: linear-gradient(180deg, var(--water-top), var(--water-bottom));
+}
+.waterPlate {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: #000079;
+  box-shadow: none;
 }
 .waterSurface {
   position: absolute;
