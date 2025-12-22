@@ -5,7 +5,7 @@ export default function LapList({ laps }) {
   if (!laps.length) return null;
   return (
     <div className="laps">
-      <div className="lapsTitle">Laps</div>
+      <div className="lapsTitle">記錄</div>
       <ol className="lapsList">
         {laps.map((ms, idx) => (
           <li key={idx} className="lapItem">

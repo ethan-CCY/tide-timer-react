@@ -26,8 +26,10 @@ export default function App() {
       return {
         ringProgress: progress,
         waterLevel: progress,
+        waterVariant: "countdown",
         title: "倒數",
         subtitle: `總長 ${formatHMS(cd.totalMs)}`,
+        flashKey: null,
       };
     }
 
@@ -36,16 +38,21 @@ export default function App() {
     const phase = (sw.elapsedMs % loop) / loop;
     return {
       ringProgress: phase,
-      waterLevel: 0.15 + phase * 0.7, // keep some padding (never fully empty/full)
-      title: "碼表",
-      subtitle: sw.isRunning ? "流動中…" : "休息一下也很好",
+      waterLevel: 0.5,
+      waterVariant: "stopwatch",
+      title: "碼錶",
+      subtitle: sw.isRunning ? "流動中…" : "跑跑跑~向前跑~",
+      flashKey:
+        sw.isRunning && sw.elapsedMs >= 10000
+          ? Math.floor(sw.elapsedMs / 10000)
+          : null,
     };
   }, [mode, sw.elapsedMs, sw.isRunning, cd.remainingMs, cd.totalMs]);
 
   const primaryTime =
     mode === "stopwatch"
       ? formatHMS(sw.elapsedMs, { showMs: true })
-      : formatHMS(cd.remainingMs);
+      : formatHMS(cd.remainingMs, { showMs: true });
 
   const onReset = () => {
     if (mode === "stopwatch") {
@@ -66,11 +73,11 @@ export default function App() {
   };
 
   return (
-    <div className="app">
+    <div className={`app mode-${mode}`}>
       <header className="header">
         <div className="brand">
           <div className="brandTitle">Tide Timer</div>
-          <div className="brandTag">療癒型碼表 / 倒數</div>
+          <div className="brandTag">療癒型碼錶 / 倒數</div>
         </div>
         <ModeSwitch mode={mode} setMode={(m) => {
           // stop running when switching modes (keeps mental model simple)
@@ -84,7 +91,10 @@ export default function App() {
         <section className="card breathe" aria-label="Timer">
           <div className="vizWrap">
             <Ring progress={viz.ringProgress} />
-            <WaterGauge level={viz.waterLevel} />
+            {mode === "stopwatch" && viz.flashKey !== null ? (
+              <div className="ringFlash" key={viz.flashKey} />
+            ) : null}
+            <WaterGauge level={viz.waterLevel} variant={viz.waterVariant} />
             <div className="vizOverlay">
               <div className="modeTitle">{viz.title}</div>
               <TimeDisplay primary={primaryTime} secondary={viz.subtitle} />
@@ -108,7 +118,7 @@ export default function App() {
             extraLeft={
               mode === "stopwatch" ? (
                 <button className="btn" onClick={onLap} disabled={!sw.isRunning}>
-                  Lap
+                  記錄
                 </button>
               ) : null
             }
@@ -121,28 +131,6 @@ export default function App() {
               完成 ✨
             </div>
           ) : null}
-        </section>
-
-        <section className="side">
-          <div className="panel">
-            <div className="panelTitle">你可以接著練的功能</div>
-            <ul className="panelList">
-              <li>倒數自訂：分鐘/秒輸入、滑桿、+10s/-10s</li>
-              <li>音效開關（完成提示音）</li>
-              <li>localStorage：記住上次模式與倒數秒數</li>
-              <li>更療癒：水波更慢、呼吸週期可調</li>
-              <li>統計：今日累積專注時間 / 完成次數</li>
-            </ul>
-          </div>
-
-          <div className="panel">
-            <div className="panelTitle">部署到 GitHub Pages</div>
-            <ol className="panelList">
-              <li>把整包檔案推到你的 GitHub repo</li>
-              <li>Repo Settings → Pages → Source 選 GitHub Actions</li>
-              <li>等待 Actions 跑完，就會自動發佈</li>
-            </ol>
-          </div>
         </section>
       </main>
 
