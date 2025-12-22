@@ -1,0 +1,59 @@
+name: Cleanup Preview on Branch Delete
+
+on:
+  delete:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: cleanup-preview
+  cancel-in-progress: false
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.ref_type == 'branch' }}
+    steps:
+      - name: Set branch name
+        run: |
+          echo "BRANCH=${{ github.event.ref }}" >> $GITHUB_ENV
+
+      - name: Skip protected branches
+        run: |
+          if [ "${BRANCH}" = "main" ] || [ "${BRANCH}" = "gh-pages" ]; then
+            echo "Skip cleanup for ${BRANCH}"
+            exit 0
+          fi
+
+      - name: Checkout gh-pages
+        uses: actions/checkout@v4
+        with:
+          ref: gh-pages
+          fetch-depth: 0
+
+      - name: Remove preview folder
+        run: |
+          set -e
+          TARGET="previews/${BRANCH}"
+
+          if [ -d "$TARGET" ]; then
+            echo "Removing $TARGET"
+            rm -rf "$TARGET"
+          else
+            echo "No preview folder found at $TARGET (nothing to clean)."
+          fi
+
+      - name: Commit and push if changed
+        run: |
+          if [ -z "$(git status --porcelain)" ]; then
+            echo "No changes to commit."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          git add -A
+          git commit -m "chore: cleanup preview for ${BRANCH}"
+          git push origin gh-pages
