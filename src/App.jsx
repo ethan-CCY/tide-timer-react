@@ -26,10 +26,8 @@ export default function App() {
       return {
         ringProgress: progress,
         waterLevel: progress,
-        waterVariant: "countdown",
         title: "倒數",
         subtitle: `總長 ${formatHMS(cd.totalMs)}`,
-        flashKey: null,
       };
     }
 
@@ -38,14 +36,9 @@ export default function App() {
     const phase = (sw.elapsedMs % loop) / loop;
     return {
       ringProgress: phase,
-      waterLevel: 0.5,
-      waterVariant: "stopwatch",
-      title: "碼錶",
-      subtitle: sw.isRunning ? "流動中…" : "跑跑跑~向前跑~",
-      flashKey:
-        sw.isRunning && sw.elapsedMs >= 10000
-          ? Math.floor(sw.elapsedMs / 10000)
-          : null,
+      waterLevel: 0.15 + phase * 0.7, // keep some padding (never fully empty/full)
+      title: "碼表",
+      subtitle: sw.isRunning ? "流動中…" : "休息一下也很好",
     };
   }, [mode, sw.elapsedMs, sw.isRunning, cd.remainingMs, cd.totalMs]);
 
@@ -77,7 +70,7 @@ export default function App() {
       <header className="header">
         <div className="brand">
           <div className="brandTitle">Tide Timer</div>
-          <div className="brandTag">療癒型碼錶 / 倒數</div>
+          <div className="brandTag">療癒型碼表 / 倒數</div>
         </div>
         <ModeSwitch mode={mode} setMode={(m) => {
           // stop running when switching modes (keeps mental model simple)
@@ -91,10 +84,7 @@ export default function App() {
         <section className="card breathe" aria-label="Timer">
           <div className="vizWrap">
             <Ring progress={viz.ringProgress} />
-            {mode === "stopwatch" && viz.flashKey !== null ? (
-              <div className="ringFlash" key={viz.flashKey} />
-            ) : null}
-            <WaterGauge level={viz.waterLevel} variant={viz.waterVariant} />
+            <WaterGauge level={viz.waterLevel} />
             <div className="vizOverlay">
               <div className="modeTitle">{viz.title}</div>
               <TimeDisplay primary={primaryTime} secondary={viz.subtitle} />
@@ -118,7 +108,7 @@ export default function App() {
             extraLeft={
               mode === "stopwatch" ? (
                 <button className="btn" onClick={onLap} disabled={!sw.isRunning}>
-                  記錄
+                  Lap
                 </button>
               ) : null
             }

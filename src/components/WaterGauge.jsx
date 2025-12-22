@@ -2,19 +2,10 @@ import React from "react";
 import { clamp } from "../lib/time.js";
 
 /**
- * WaterGauge: soothing water level + slow wave drift (countdown),
- * or static dark plate for stopwatch.
- * level: 0..1 (1 = full) for animated mode
+ * WaterGauge: soothing water level + slow wave drift.
+ * level: 0..1 (1 = full)
  */
-export default function WaterGauge({ level = 0.5, variant = "countdown" }) {
-  if (variant === "stopwatch") {
-    return (
-      <div className="waterGauge waterGaugeStatic" aria-hidden="true">
-        <div className="waterPlate" />
-      </div>
-    );
-  }
-
+export default function WaterGauge({ level = 0.5 }) {
   const l = clamp(level, 0, 1);
   const y = `${(1 - l) * 100}%`;
 
