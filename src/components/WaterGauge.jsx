@@ -30,12 +30,11 @@ export default function WaterGauge({ level = 0.5, variant = "countdown", size = 
     >
       <div className="waterSurface" style={{ top: y }} />
       <div
-        className="waterFill"
-        style={{ "--water-shift": `${(1 - l) * 100}%` }}
-      >
-        <div className="wave wave1" />
-        <div className="wave wave2" />
-      </div>
+        className="waterFill" style={{ "--water-shift": `${(1 - l) * 100}%` }}>
+        <div className="waterFillInner">
+          <div className="wave wave1" />
+          <div className="wave wave2" />
+        </div>
     </div>
   );
 }
